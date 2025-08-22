@@ -52,7 +52,7 @@ grafana:
   image: grafana/grafana:latest
   plugins: alexanderzobnin-zabbix-app
   storage: 5Gi
-  nodePort: 32000
+  nodePort: 32001
   resources:
     requests:
       cpu: "250m"
