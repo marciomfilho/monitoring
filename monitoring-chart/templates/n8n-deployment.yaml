@@ -28,6 +28,8 @@ spec:
               value: "sqlite"
             - name: DB_SQLITE_VACUUM_ON_STARTUP
               value: "true"
+            - name: N8N_PORT
+              value: "5678" 
           volumeMounts:
             - mountPath: /home/node/.n8n
               name: n8n-data
