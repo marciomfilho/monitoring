@@ -48,6 +48,14 @@ n8n:
     limits:
       cpu: "500m"
       memory: "512Mi"
+  ingress:
+    enabled: true
+    hosts:
+      - host: n8n.labk8s.com.br
+        paths:
+          - path: /
+            serviceName: n8n
+            servicePort: 5678
 
 grafana:
   image: grafana/grafana:latest
