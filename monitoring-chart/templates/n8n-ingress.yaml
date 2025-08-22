@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "monitoring-chart.fullname" . }}-n8n
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: public
+  rules:
+    - host: {{ .Values.n8n.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "monitoring-chart.fullname" . }}-n8n
+                port:
+                  number: 5678
+  tls:
+    - hosts:
+        - {{ .Values.n8n.host }}
+      secretName: {{ include "monitoring-chart.fullname" . }}-n8n-tls

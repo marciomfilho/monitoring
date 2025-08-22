@@ -36,6 +36,7 @@ zabbixWeb:
 
 n8n:
   image: n8nio/n8n
+  host: n8n.labk8s.com.br
   basicAuthUser: your_username
   basicAuthPassword: your_password
   storage: 2Gi
