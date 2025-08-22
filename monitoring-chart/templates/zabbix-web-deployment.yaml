@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zabbix-web
+  template:
+    metadata:
+      labels:
+        app: zabbix-web
+    spec:
+      containers:
+        - name: zabbix-web
+          image: {{ .Values.zabbixWeb.image }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_SERVER_HOST
+              value: postgres
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.user | quote }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgres.password | quote }}
+            - name: ZBX_SERVER_HOST
+              value: zabbix-server
+            - name: ZBX_SERVER_PORT
+              value: "10051"
+            - name: TZ
+              value: {{ .Values.zabbixWeb.timezone }}
+          resources:
+            requests:
+              cpu: {{ .Values.zabbixWeb.resources.requests.cpu }}
+              memory: {{ .Values.zabbixWeb.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.zabbixWeb.resources.limits.cpu }}
+              memory: {{ .Values.zabbixWeb.resources.limits.memory }}

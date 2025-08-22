@@ -1,0 +1,75 @@
+postgres:
+  image: postgres:latest
+  user: zabbix
+  password: zabbix_password
+  db: zabbix
+  storage: 5Gi
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
+zabbixServer:
+  image: zabbix/zabbix-server-pgsql:latest
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
+zabbixWeb:
+  image: zabbix/zabbix-web-nginx-pgsql:latest
+  nodePort: 30081
+  timezone: America/Sao_Paulo
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+n8n:
+  image: n8nio/n8n
+  basicAuthUser: your_username
+  basicAuthPassword: your_password
+  storage: 2Gi
+  nodePort: 30567
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+grafana:
+  image: grafana/grafana:latest
+  plugins: alexanderzobnin-zabbix-app
+  storage: 5Gi
+  nodePort: 32000
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+zabbixAgent:
+  image: zabbix/zabbix-agent:latest
+  serverHost: "10.1.0.14"
+  startAgents: "10"
+  passiveServers: "10.1.0.14"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"

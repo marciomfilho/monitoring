@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      containers:
+        - name: n8n
+          image: {{ .Values.n8n.image }}
+          ports:
+            - containerPort: 5678
+          env:
+            - name: N8N_BASIC_AUTH_ACTIVE
+              value: "true"
+            - name: N8N_BASIC_AUTH_USER
+              value: {{ .Values.n8n.basicAuthUser | quote }}
+            - name: N8N_BASIC_AUTH_PASSWORD
+              value: {{ .Values.n8n.basicAuthPassword | quote }}
+            - name: DB_TYPE
+              value: "sqlite"
+            - name: DB_SQLITE_VACUUM_ON_STARTUP
+              value: "true"
+          volumeMounts:
+            - mountPath: /home/node/.n8n
+              name: n8n-data
+          resources:
+            requests:
+              cpu: {{ .Values.n8n.resources.requests.cpu }}
+              memory: {{ .Values.n8n.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.n8n.resources.limits.cpu }}
+              memory: {{ .Values.n8n.resources.limits.memory }}
+      volumes:
+        - name: n8n-data
+          persistentVolumeClaim:
+            claimName: n8n-pvc

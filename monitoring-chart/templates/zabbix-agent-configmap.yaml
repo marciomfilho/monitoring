@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zabbix-agent-network-conf
+data:
+  zabbix_agentd_network.conf: |
+    Server={{ .Values.zabbixAgent.passiveServers }}
+    ServerActive={{ .Values.zabbixAgent.serverHost }}
+    Hostname=zabbix-agent-{{ .Release.Name }}
+    ListenIP=0.0.0.0
+    ListenPort=10050
+    StartAgents={{ .Values.zabbixAgent.startAgents }}
