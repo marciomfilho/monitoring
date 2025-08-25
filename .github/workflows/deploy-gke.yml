@@ -1,0 +1,50 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: careful-airfoil-470112-u0
+  GKE_CLUSTER: cluster-app-helm
+  GKE_ZONE: us-central1-c
+  DEPLOYMENT_NAME: meu-deploy
+  IMAGE_NAME: meu-app
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+
+    - name: Configure Docker for GCR
+      run: gcloud auth configure-docker
+
+    - name: Get GKE credentials
+      uses: google-github-actions/get-gke-credentials@v1
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+
+    - name: Build Docker image
+      run: |
+        docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+      
+    - name: Push Docker image to GCR
+      run: |
+        docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Deploy with Helm
+      run: |
+        helm upgrade --install ${{ env.DEPLOYMENT_NAME }} ./chart-dir \
+          --set image.repository=gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }} \
+          --set image.tag=${{ github.sha }}
