@@ -1,4 +1,4 @@
-name: Deploy Helm Chart to GKE
+name: Deploy Nginx to GKE
 
 on:
   push:
@@ -9,7 +9,7 @@ env:
   PROJECT_ID: careful-airfoil-470112-u0
   GKE_CLUSTER_RESOURCE: projects/careful-airfoil-470112-u0/locations/us-central1-c/clusters/cluster-app-helm
   GKE_ZONE: us-central1-c
-  DEPLOYMENT_NAME: meu-deploy
+  DEPLOYMENT_NAME: nginx-deploy
 
 jobs:
   deploy:
@@ -36,6 +36,26 @@ jobs:
         location: ${{ env.GKE_ZONE }}
         project_id: ${{ env.PROJECT_ID }}
 
-    - name: Deploy Helm Chart
+    - name: Deploy Nginx
       run: |
-        helm upgrade --install ${{ env.DEPLOYMENT_NAME }} ./monitoring-chart
+        kubectl apply -f - <<EOF
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: ${{ env.DEPLOYMENT_NAME }}
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: nginx
+          template:
+            metadata:
+              labels:
+                app: nginx
+            spec:
+              containers:
+              - name: nginx
+                image: nginx:latest
+                ports:
+                - containerPort: 80
+        EOF
