@@ -45,6 +45,6 @@ jobs:
 
     - name: Deploy with Helm
       run: |
-        helm upgrade --install ${{ env.DEPLOYMENT_NAME }} ./chart-dir \
+        helm upgrade --install ${{ env.DEPLOYMENT_NAME }} ./monitoring-chart \
           --set image.repository=gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }} \
           --set image.tag=${{ github.sha }}
