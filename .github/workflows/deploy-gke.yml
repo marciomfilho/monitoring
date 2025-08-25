@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_ID: careful-airfoil-470112-u0
-  GKE_CLUSTER: cluster-app-helm
+  GKE_CLUSTER_RESOURCE: projects/careful-airfoil-470112-u0/locations/us-central1-c/clusters/cluster-app-helm
   GKE_ZONE: us-central1-c
   DEPLOYMENT_NAME: meu-deploy
   IMAGE_NAME: meu-app
@@ -36,9 +36,9 @@ jobs:
     - name: Get GKE credentials
       uses: google-github-actions/get-gke-credentials@v2
       with:
-        cluster_name: projects/careful-airfoil-470112-u0/locations/us-central1-c/clusters/cluster-app-helm
-        location: us-central1-c
-        project_id: careful-airfoil-470112-u0
+        cluster_name: ${{ env.GKE_CLUSTER_RESOURCE }}
+        location: ${{ env.GKE_ZONE }}
+        project_id: ${{ env.PROJECT_ID }}
 
     - name: Build Docker image
       run: |
