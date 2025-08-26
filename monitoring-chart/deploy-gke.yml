@@ -1,0 +1,42 @@
+
+name: Deploy Helm Chart to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: careful-airfoil-470112-u0
+  GKE_CLUSTER_RESOURCE: projects/careful-airfoil-470112-u0/locations/us-central1-c/clusters/cluster-app-helm
+  GKE_ZONE: us-central1-c
+  DEPLOYMENT_NAME: meu-deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GKE_SA_KEY }}
+
+    - name: Setup gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ env.PROJECT_ID }}
+
+    - name: Get GKE credentials
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER_RESOURCE }}
+        location: ${{ env.GKE_ZONE }}
+        project_id: ${{ env.PROJECT_ID }}
+
+    - name: Deploy Helm Chart
+      run: |
+        helm upgrade --install ${{ env.DEPLOYMENT_NAME }} ./monitoring-chart
